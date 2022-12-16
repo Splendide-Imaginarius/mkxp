@@ -62,11 +62,24 @@
     // "fixedAspectRatio": true,
 
 
-    // Apply linear interpolation when game screen
+    // Apply smooth interpolation when game screen
     // is upscaled
-    // (default: disabled)
+    // 0: Nearest-Neighbor
+    // 1: Bilinear
+    // 2: Bicubic
+    // 3: Lanczos3
+    // 4: xBRZ
+    // (default: 0)
     //
-    // "smoothScaling": false,
+    // "smoothScaling": 0,
+
+
+    // Scaling factor for xBRZ interpolation
+    // (set to at least the ratio of your window size
+    // to the game's native resolution)
+    // (default: 1.0)
+    //
+    // "xbrzScalingFactor": 4.0,
 
 
     // Sync screen redraws to the monitor refresh rate
@@ -161,7 +174,8 @@
     // capable of it. Some drivers carry buggy
     // implementations of this functionality, so
     // disabling it can be used as a workaround.
-    // Does nothing on macOS.
+    // Does nothing on macOS. Not compatible with Bicubic,
+    // Lanczos3, or xBRZ scaling.
     // (default: disabled)
     //
     // "enableBlitting": false,

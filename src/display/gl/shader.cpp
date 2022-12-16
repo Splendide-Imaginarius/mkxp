@@ -44,6 +44,9 @@
 #include "simpleAlphaUni.frag.xxd"
 #include "tilemap.frag.xxd"
 #include "flashMap.frag.xxd"
+#include "bicubic.frag.xxd"
+#include "lanczos3.frag.xxd"
+#include "xbrz.frag.xxd"
 #include "minimal.vert.xxd"
 #include "simple.vert.xxd"
 #include "simpleColor.vert.xxd"
@@ -745,4 +748,50 @@ void BltShader::setSubRect(const FloatRect &value)
 void BltShader::setOpacity(float value)
 {
 	gl.Uniform1f(u_opacity, value);
+}
+
+BicubicShader::BicubicShader()
+{
+	INIT_SHADER(simple, bicubic, BicubicShader);
+
+	ShaderBase::init();
+
+	GET_U(texOffsetX);
+	GET_U(sourceSize);
+	GET_U(bc);
+
+	// TODO: Maybe expose this as a setting?
+	gl.Uniform2f(u_bc, 0.0, 0.5);
+}
+
+Lanczos3Shader::Lanczos3Shader()
+{
+	INIT_SHADER(simple, lanczos3, Lanczos3Shader);
+
+	ShaderBase::init();
+
+	GET_U(texOffsetX);
+	GET_U(sourceSize);
+}
+
+void Lanczos3Shader::setTexSize(const Vec2i &value)
+{
+	ShaderBase::setTexSize(value);
+	gl.Uniform2f(u_sourceSize, (float)value.x, (float)value.y);
+}
+
+XbrzShader::XbrzShader()
+{
+	INIT_SHADER(simple, xbrz, XbrzShader);
+
+	ShaderBase::init();
+
+	GET_U(texOffsetX);
+	GET_U(sourceSize);
+	GET_U(targetScale);
+}
+
+void XbrzShader::setTargetScale(const Vec2 &value)
+{
+	gl.Uniform2f(u_targetScale, value.x, value.y);
 }
