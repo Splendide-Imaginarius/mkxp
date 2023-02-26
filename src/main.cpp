@@ -66,6 +66,10 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #include "steamshim_child.h"
 #endif
 
+#ifdef MKXPZ_DISCORD
+#include "discord.h"
+#endif
+
 #ifdef MKXPZ_BUILD_XCODE
 #include <Availability.h>
 #include "TouchBar.h"
@@ -260,6 +264,11 @@ int main(int argc, char *argv[]) {
       SDL_Quit();
       return 0;
     }
+#endif
+
+
+#ifdef MKXPZ_DISCORD
+    Discord_init();
 #endif
 
     if (conf.windowTitle.empty())

@@ -11,6 +11,9 @@ option('use_miniffi', type: 'boolean', value: true, description: 'Enable MiniFFI
 option('enable-https', type: 'boolean', value: true, description: 'Support HTTPS for get/post requests. Requires OpenSSL.')
 option('workdir_current', type: 'boolean', value: false, description: 'Keep current directory on startup')
 
+option('discord_path', type: 'string', value: '', description: 'Path to Discord Game SDK')
+option('discord_appid', type: 'string', value: '', description: 'Your game Discord Application ID')
+
 option('static_executable', type: 'boolean', value: true, description: 'Build a static executable (Windows-only)')
 option('appimagekit_path', type: 'string', value: '', description: 'Path to AppImageTool, used for building AppImages')
 option('appimage', type: 'boolean', value: false, description: 'Whether to install to an AppImage or just copy everything')

@@ -102,6 +102,10 @@ void MiniFFIBindingInit();
 void CUSLBindingInit();
 #endif
 
+#ifdef MKXPZ_DISCORD
+void DiscordBindingInit();
+#endif
+
 void httpBindingInit();
 
 RB_METHOD(mkxpDelta);
@@ -180,6 +184,10 @@ static void mriBindingInit() {
     
 #ifdef MKXPZ_STEAM
     CUSLBindingInit();
+#endif
+
+#ifdef MKXPZ_DISCORD
+    DiscordBindingInit();
 #endif
     
     httpBindingInit();

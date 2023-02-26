@@ -1,4 +1,4 @@
-project('mkxp-z', 'c', 'cpp', version: '2.4', meson_version: '>=0.56.0', default_options: ['cpp_std=c++14', 'buildtype=release'])
+project('mkxp-zr', 'c', 'cpp', version: '2.4', meson_version: '>=0.56.0', default_options: ['cpp_std=c++14', 'buildtype=release'])
 
 host_system = host_machine.system()
 
@@ -57,6 +57,35 @@ if steamworks_path != ''
         global_args += '-DMKXPZ_STEAM'
         global_sources += 'steamshim/steamshim_child.c'
         steamworks = true
+    endif
+endif
+
+# DISCORD
+discord = false
+discord_path = get_option('discord_path')
+if discord_path != ''
+    libname = 'discord_game_sdk'
+    if win64 == true
+        libname += '.dll'
+    endif
+    if sizeof['void*'] == 4
+        bindir = 'x86'
+    else
+        bindir = 'x86_64'
+    endif
+
+    discord_libpath = discord_path + '/lib/' + bindir
+    discord_srcpath = discord_path + '/c'
+    discordsdk = compilers['cpp'].find_library(libname, required: false, dirs: [discord_libpath])
+
+    if discordsdk.found() == true
+        global_dependencies += discordsdk
+
+        global_include_dirs += include_directories(discord_srcpath)
+
+        global_args += '-DMKXPZ_DISCORD'
+        global_args += '-DDISCORD_APPID=' + get_option('discord_appid')
+        discord = true
     endif
 endif
 

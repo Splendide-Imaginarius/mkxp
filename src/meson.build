@@ -166,4 +166,8 @@ main_source = files(
     'system/systemImpl.cpp'
 )
 
+if discord == true
+    main_source += files('discord.cpp')
+endif
+
 global_sources += main_source

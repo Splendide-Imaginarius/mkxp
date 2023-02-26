@@ -45,4 +45,8 @@ if miniffi == true
     binding_source += files('miniffi.cpp')
 endif
 
+if discord == true
+    binding_source += files('discord-binding.cpp')
+endif
+
 global_sources += binding_source

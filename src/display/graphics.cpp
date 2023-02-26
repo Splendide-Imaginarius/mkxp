@@ -55,6 +55,10 @@
 #include "steamshim_child.h"
 #endif
 
+#ifdef MKXPZ_DISCORD
+#include "discord.h"
+#endif
+
 #include <algorithm>
 #include <errno.h>
 #include <sys/time.h>
@@ -1094,6 +1098,10 @@ void Graphics::update(bool checkForShutdown) {
     
     p->checkSyncLock();
     
+#ifdef MKXPZ_DISCORD
+    if (Discord_connected())
+        Discord_update();
+#endif
     
 #ifdef MKXPZ_STEAM
     if (STEAMSHIM_alive())

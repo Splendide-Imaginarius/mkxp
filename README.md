@@ -1,21 +1,11 @@
-# mkxp-z
+# mkxp-zr
 
-<p align=center>
-    <img src="screenshot.png?raw=true" width=512 height=412>
-</p>
+This is a fork of mkxp-z, which is a fork of the RGSS reimplementation mkxp originally intended to run Pokémon Essentials games (which were notorious for their dependency on a lot of Windows API calls). Currently the intent is to add Discord Game SDK support and a developer configurable Input module.
 
-This is a fork of mkxp intended to be a little more than just a barebones recreation of RPG Maker. The original goal was successfully running games based on Pokemon Essentials, which is notoriously dependent on Windows APIs. I'd consider that mission accomplished.
-
-Despite the fact that it was made with Essentials games in mind, there is nothing connected to it contained in this repository, and it should still be compatible with anything that runs in the upstream version of MKXP. You can think of it as MKXP but a bit supercharged --  it should be able to run all but the most demanding of RGSS projects, given a bit of porting work.
-
-It supports Windows, Linux and both Intel and Apple Silicon versions of macOS.
-
-Releases are [here](https://github.com/mkxp-z/mkxp-z/releases). Requirements for running them are Windows 8.1+, Ubuntu 20.04+ (Fedora and Manjaro releases that age or newer *should* also be fine), or macOS 10.12.2+.
-
-I'd highly recommend [checking the wiki](https://github.com/mkxp-z/mkxp-z/wiki) for more information than this readme contains.
+It supports Windows, and probably Linux and x86/ARM macOS as well.
 
 ## Bindings
-Bindings provide the glue code for an interpreted language environment to run game scripts in. mkxp-z focuses on MRI and as such the mruby and null bindings are not included.
+Bindings provide the glue code for an interpreted language environment to run game scripts in. mkxp-z, and by extension this fork, focuses on MRI and as such the mruby and null bindings are not included.
 
 ## Midi music
 
