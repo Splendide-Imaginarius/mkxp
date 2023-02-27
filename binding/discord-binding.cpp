@@ -3,9 +3,18 @@
 #include "util/debugwriter.h"
 #include "discord.h"
 
+typedef struct Discord_rubyCallback {
+    VALUE proc;
+} Discord_rubyCallback;
+
 VALUE Discord_module;
 VALUE Discord_user_rb;
 
+/* Discord */
+
+/*  update_activity   */
+/*  args:             */
+/*    activity: Hash  */
 RB_METHOD(updateActivity) {
     if (!Discord_connected())
         return Qfalse;
@@ -72,6 +81,35 @@ RB_METHOD(updateActivity) {
     return Qtrue;
 }
 
+void activityManager_callback(void* callback_data, enum EDiscordResult result) {
+    if (callback_data == NULL)
+        return;
+
+    Discord_rubyCallback* callback = (Discord_rubyCallback*)callback_data;
+
+    // call the block
+    rb_proc_call(callback->proc, rb_ary_new_from_args(1, INT2NUM(result)));
+    free(callback);
+}
+
+RB_METHOD(sendRequestReply) {
+    VALUE id, response;
+    Discord_rubyCallback* block = (Discord_rubyCallback*)malloc(sizeof(Discord_rubyCallback));
+    rb_scan_args(argc, argv, "2&", &id, &response, &block->proc);
+
+    void* callback_data = NULL;
+    if (rb_block_given_p())
+        callback_data = (void*)block;
+
+    Discord_ActivityManager->send_request_reply(Discord_ActivityManager, NUM2LL(id), (EDiscordActivityJoinRequestReply)NUM2INT(response), callback_data, activityManager_callback);
+
+    return Qtrue;
+}
+
+/*  update_activity     */
+/*  args:               */
+/*    event:    Symbol  */
+/*    callback: proc    */
 RB_METHOD(addEventCallback) {
     if (!Discord_connected())
         return Qfalse;
@@ -89,6 +127,8 @@ RB_METHOD(addEventCallback) {
     return Qtrue;
 }
 
+/* Discord::User */
+
 RB_METHOD(userInitialize) {
     // get args
     VALUE id, username, discriminator, avatar, bot;
@@ -104,8 +144,14 @@ RB_METHOD(userInitialize) {
     return self;
 }
 
+
 void DiscordBindingInit() {
     Discord_module = rb_define_module("Discord");
+
+    VALUE Discord_ActivityJoinRequestReply = rb_define_module_under(Discord_module, "ActivityJoinRequestReply");
+    rb_define_const(Discord_ActivityJoinRequestReply, "NO", INT2NUM(DiscordActivityJoinRequestReply_No));
+    rb_define_const(Discord_ActivityJoinRequestReply, "YES", INT2NUM(DiscordActivityJoinRequestReply_Yes));
+    rb_define_const(Discord_ActivityJoinRequestReply, "IGNORE", INT2NUM(DiscordActivityJoinRequestReply_Ignore));
 
     // DiscordUser wrapper
     Discord_user_rb = rb_define_class_under(Discord_module, "User", rb_cObject);
@@ -128,13 +174,14 @@ void DiscordBindingInit() {
     
     // module functions
     _rb_define_module_function(Discord_module, "update_activity", updateActivity);
+    _rb_define_module_function(Discord_module, "send_request_reply", sendRequestReply);
     _rb_define_module_function(Discord_module, "add_event_callback", addEventCallback);
 }
 
 // create a ruby Discord::User from a pointer to a C DiscordUser struct
 VALUE _rb_discord_user_new_cstruct(struct DiscordUser* user) {
     VALUE argv[] = {
-        LONG2NUM(user->id),
+        LL2NUM(user->id),
         rb_str_new_cstr(user->username),
         rb_str_new_cstr(user->discriminator),
         rb_str_new_cstr(user->avatar),
@@ -145,23 +192,21 @@ VALUE _rb_discord_user_new_cstruct(struct DiscordUser* user) {
 }
 
 void DISCORD_CALLBACK Discord_onActivityJoin(void* event_data, const char* secret) {
-    VALUE events = rb_cv_get(Discord_module, "events");
+    VALUE events = rb_cv_get(Discord_module, "@@events");
     VALUE onActivityJoinEvents = rb_hash_aref(events, ID2SYM(rb_intern("on_activity_join")));
     if (onActivityJoinEvents != Qnil) {
-        for (long i = 0; i < rb_array_len(onActivityJoinEvents); i++) {
-            const VALUE i_rb = LONG2NUM(i);
-            rb_proc_call(rb_ary_aref(1, &i_rb,  onActivityJoinEvents), rb_ary_new_from_args(1, rb_str_new_cstr(secret)));
+        for (long i = 0l; i < rb_array_len(onActivityJoinEvents); i++) {
+            rb_proc_call(rb_ary_entry(onActivityJoinEvents, i), rb_ary_new_from_args(1, rb_str_new_cstr(secret)));
         }
     }
 }
 
 void DISCORD_CALLBACK Discord_onActivitySpectate(void* event_data, const char* secret) {
-    VALUE events = rb_cv_get(Discord_module, "events");
+    VALUE events = rb_cv_get(Discord_module, "@@events");
     VALUE onActivitySpectate = rb_hash_aref(events, ID2SYM(rb_intern("on_activity_spectate")));
     if (onActivitySpectate != Qnil) {
-        for (long i = 0; i < rb_array_len(onActivitySpectate); i++) {
-            const VALUE i_rb = LONG2NUM(i);
-            rb_proc_call(rb_ary_aref(1, &i_rb, onActivitySpectate), rb_ary_new_from_args(1, rb_str_new_cstr(secret)));
+        for (long i = 0l; i < rb_array_len(onActivitySpectate); i++) {
+            rb_proc_call(rb_ary_entry(onActivitySpectate, i), rb_ary_new_from_args(1, rb_str_new_cstr(secret)));
         }
     }
 }
@@ -170,9 +215,8 @@ void DISCORD_CALLBACK Discord_onActivityJoinRequest(void* event_data, struct Dis
     VALUE events = rb_cv_get(Discord_module, "@@events");
     VALUE onActivityJoinRequest = rb_hash_aref(events, ID2SYM(rb_intern("on_activity_join_request")));
     if (onActivityJoinRequest != Qnil) {
-        for (long i = 0; i < rb_array_len(onActivityJoinRequest); i++) {
-            const VALUE i_rb = LONG2NUM(i);
-            rb_proc_call(rb_ary_aref(1, &i_rb, onActivityJoinRequest), _rb_discord_user_new_cstruct(user));
+        for (long i = 0l; i < rb_array_len(onActivityJoinRequest); i++) {
+            rb_proc_call(rb_ary_entry(onActivityJoinRequest, i), rb_ary_new_from_args(1, _rb_discord_user_new_cstruct(user)));
         }
     }
 }
