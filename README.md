@@ -1,11 +1,18 @@
 # mkxp-zr
 
-This is a fork of mkxp-z, which is a fork of the RGSS reimplementation mkxp originally intended to run Pokémon Essentials games (which were notorious for their dependency on a lot of Windows API calls). Currently the intent is to add Discord Game SDK support and a developer configurable Input module.
+This is a fork of mkxp-z, which is a fork of the RGSS reimplementation mkxp originally intended to run Pokémon Essentials games (which were notorious for their dependency on a lot of Windows API calls). Currently, its only purpose is to add Discord Game SDK support directly to mkxp for the 2023 Relic Castle Winter Jam entry [Pivot](https://reliccastle.com/threads/6203/)
 
 It supports Windows, and probably Linux and x86/ARM macOS as well.
 
-## Bindings
-Bindings provide the glue code for an interpreted language environment to run game scripts in. mkxp-z, and by extension this fork, focuses on MRI and as such the mruby and null bindings are not included.
+## Building
+mkxp-z's build system is fairly easy to follow, however there are a few steps. Thankfully, these steps have already been outlined far better than I ever could, right [here (Windows/Linux)](https://roza-gb.gitbook.io/mkxp-z/compilation) and [here (macOS)](https://roza-gb.gitbook.io/mkxp-z/building-xcode/compilation-macos-xcode).
+Obviously, nothing implemented by this fork is covered in the mkxp-z gitbook or wiki. There are a few options for configuring those things:
+
+| Option | Type | Description | Default |
+| --- | --- | --- | --- |
+| discord_path | string | Path to the [Discord Game SDK](https://discord.com/developers/docs/game-sdk/sdk-starter-guide) for building with Discord support | '' |
+| discord_appid | string | Your game's [Discord application ID](https://discord.com/developers/applications) | '' |
+| windows_resource_directory | string | Name of Windows EXE resource directory (for changing the EXE icon etc) | 'windows' |
 
 ## Midi music
 
@@ -31,6 +38,6 @@ If a requested font is not found, no error is generated. Instead, a built-in fon
 
 ## What doesn't work
 * wma audio files
-* Creating Bitmaps with sizes greater than your hardware's texture size limit (around 16384 on modern cards).^
+* Creating Bitmaps with sizes greater than your hardware's texture size limit (either 16384 on an average modern GPU or 32768 for modern dedicated GPUs).^
 
 ^ There is an exception to this, called *mega surface*. When a Bitmap bigger than the texture limit is created from a file, it is not stored in VRAM, but regular RAM. Its sole purpose is to be used as a tileset bitmap. Any other operation to it (besides blitting to a regular Bitmap) will result in an error.
