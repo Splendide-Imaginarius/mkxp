@@ -14,6 +14,8 @@ option('workdir_current', type: 'boolean', value: false, description: 'Keep curr
 option('discord_path', type: 'string', value: '', description: 'Path to Discord Game SDK')
 option('discord_appid', type: 'string', value: '', description: 'Your game Discord Application ID')
 
+option('windows_resource_directory', type: 'string', value: 'windows', description: 'Path to Windows EXE resource directory')
+
 option('static_executable', type: 'boolean', value: true, description: 'Build a static executable (Windows-only)')
 option('appimagekit_path', type: 'string', value: '', description: 'Path to AppImageTool, used for building AppImages')
 option('appimage', type: 'boolean', value: false, description: 'Whether to install to an AppImage or just copy everything')
