@@ -4,6 +4,7 @@
 #include <cstdio>
 
 struct Application app;
+bool _discord_connected;
 
 void Discord_init() {
     // Don't forget to memset or otherwise initialize your classes!
@@ -16,17 +17,12 @@ void Discord_init() {
     params.flags = DiscordCreateFlags_NoRequireDiscord;
     params.event_data = &app;
 
-    DiscordCreate(DISCORD_VERSION, &params, &app.core);
-
-    struct DiscordActivity activity;
-    memset(&activity, 0, sizeof(activity));
-    sprintf(activity.details, "the mkxp-z with discord integration");
-
-    app.core->get_activity_manager(app.core)->update_activity(app.core->get_activity_manager(app.core), &activity, &app, NULL);
+    EDiscordResult result = DiscordCreate(DISCORD_VERSION, &params, &app.core);
+    _discord_connected = (result == DiscordResult_Ok);
 }
 
 bool Discord_connected() {
-    return true;
+    return _discord_connected;
 }
 
 void Discord_update() {
