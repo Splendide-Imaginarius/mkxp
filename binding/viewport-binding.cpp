@@ -76,6 +76,23 @@ RB_METHOD(viewportInitialize) {
     return self;
 }
 
+void bitmapInitProps(Bitmap *b, VALUE self);
+
+RB_METHOD(viewportSnapToBuffer) {
+    RB_UNUSED_PARAM;
+
+    Viewport* vp = getPrivateData<Viewport>(self);
+    
+    Bitmap *result = 0;
+    
+    GUARD_EXC( result = vp->snapToBitmap(); );
+    
+    VALUE obj = wrapObject(result, BitmapType);
+    bitmapInitProps(result, obj);
+    
+    return obj;
+}
+
 DEF_GFX_PROP_OBJ_VAL(Viewport, Rect, Rect, "rect")
 DEF_GFX_PROP_OBJ_VAL(Viewport, Color, Color, "color")
 DEF_GFX_PROP_OBJ_VAL(Viewport, Tone, Tone, "tone")
@@ -96,6 +113,8 @@ void viewportBindingInit() {
     sceneElementBindingInit<Viewport>(klass);
     
     _rb_define_method(klass, "initialize", viewportInitialize);
+    
+    _rb_define_method(klass, "snap_to_bitmap", viewportSnapToBuffer);
     
     INIT_PROP_BIND(Viewport, Rect, "rect");
     INIT_PROP_BIND(Viewport, OX, "ox");

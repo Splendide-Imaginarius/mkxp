@@ -21,6 +21,7 @@
 
 #include "viewport.h"
 
+#include "bitmap.h"
 #include "sharedstate.h"
 #include "etc.h"
 #include "util.h"
@@ -142,6 +143,18 @@ void Viewport::update()
 	guardDisposed();
 
 	Flashable::update();
+}
+
+Bitmap *Viewport::snapToBitmap() {
+    Bitmap *bitmap = new Bitmap(p->rect->width, p->rect->height);
+
+	GFX_LOCK;
+	shState->graphics().snapSceneToBitmap(this);
+	GFX_UNLOCK;
+
+    /* Taint entire bitmap */
+    bitmap->taintArea(IntRect(0, 0, p->rect->width, p->rect->height));
+    return bitmap;
 }
 
 DEF_ATTR_RD_SIMPLE(Viewport, OX,   int,   geometry.orig.x)

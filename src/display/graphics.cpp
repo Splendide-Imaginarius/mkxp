@@ -947,6 +947,26 @@ struct GraphicsPrivate {
         GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y), Vec2i());
         GLMeta::blitEnd();
     }
+
+    void sceneToBuffer(TEXFBO &buffer, Scene* scn) {
+        const int w = scn->getGeometry().rect.w;
+        const int h = scn->getGeometry().rect.h;
+
+        shState->prepareDraw();
+
+        screen.getPP().startRender();
+        
+        glState.viewport.set(IntRect(0, 0, w, h));
+
+        FBO::clear();
+
+        scn->composite();
+        
+        GLMeta::blitBegin(buffer);
+        GLMeta::blitSource(screen.getPP().frontBuffer());
+        GLMeta::blitRectangle(IntRect(0, 0, w, h), Vec2i());
+        GLMeta::blitEnd();
+    }
     
     void metaBlitBufferFlippedScaled() {
         metaBlitBufferFlippedScaled(scRes);
@@ -1331,6 +1351,17 @@ Bitmap *Graphics::snapToBitmap() {
     
     /* Taint entire bitmap */
     bitmap->taintArea(IntRect(0, 0, width(), height()));
+    return bitmap;
+}
+
+Bitmap *Graphics::snapSceneToBitmap(Scene* scene) {
+    IntRect rect = scene->getGeometry().rect;
+    Bitmap *bitmap = new Bitmap(rect.w, rect.h);
+    
+    p->sceneToBuffer(bitmap->getGLTypes(), scene);
+    
+    /* Taint entire bitmap */
+    bitmap->taintArea(IntRect(0, 0, rect.w, rect.h));
     return bitmap;
 }
 

@@ -55,6 +55,7 @@ public:
 	void fadein(int duration);
 
 	Bitmap *snapToBitmap();
+	Bitmap *snapSceneToBitmap(Scene* scene);
 
 	int width() const;
 	int height() const;

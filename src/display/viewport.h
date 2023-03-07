@@ -27,6 +27,7 @@
 #include "disposable.h"
 #include "util.h"
 
+class Bitmap;
 struct ViewportPrivate;
 
 class Viewport : public Scene, public SceneElement, public Flashable, public Disposable
@@ -46,6 +47,8 @@ public:
 	DECL_ATTR( Tone,  Tone&  )
 
 	void initDynAttribs();
+
+	Bitmap *snapToBitmap();
 
 private:
 	void initViewport(int x, int y, int width, int height);
