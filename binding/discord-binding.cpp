@@ -93,6 +93,9 @@ void activityManager_callback(void* callback_data, enum EDiscordResult result) {
 }
 
 RB_METHOD(sendRequestReply) {
+    if (!Discord_connected())
+        return Qfalse;
+        
     VALUE id, response;
     Discord_rubyCallback* block = (Discord_rubyCallback*)malloc(sizeof(Discord_rubyCallback));
     rb_scan_args(argc, argv, "2&", &id, &response, &block->proc);

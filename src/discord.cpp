@@ -21,7 +21,7 @@ void Discord_init() {
     EDiscordResult result = DiscordCreate(DISCORD_VERSION, &params, &app.core);
     _discord_connected = (result == DiscordResult_Ok);
 
-    std::string path = "%s/Game.exe" + mkxp_fs::getDefaultGameRoot();
+    std::string path = mkxp_fs::getDefaultGameRoot() + "/Game.exe";
     Discord_ActivityManager->register_command(Discord_ActivityManager, path.c_str());
 
     Discord_activityEvents.on_activity_invite = &Discord_onActivityInvite;
