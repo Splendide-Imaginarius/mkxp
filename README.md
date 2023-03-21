@@ -1,6 +1,6 @@
 # mkxp-zr
 
-This is a fork of mkxp-z, which is a fork of the RGSS reimplementation mkxp originally intended to run Pokémon Essentials games (which were notorious for their dependency on a lot of Windows API calls). Currently, its only purpose is to add Discord Game SDK support directly to mkxp for the 2023 Relic Castle Winter Jam entry [Pivot](https://reliccastle.com/threads/6203/)
+This is a fork of mkxp-z, which is a fork of the RGSS reimplementation mkxp originally intended to run Pokémon Essentials games (which were notorious for their dependency on a lot of Windows API calls). Original its only purpose was to add Discord Game SDK support directly to mkxp for the 2023 Relic Castle Winter Jam entry [Pivot](https://reliccastle.com/threads/6203/), but I found the ability to add new ways of interacting with the underlying engine behind RGSS extremely useful for my own games as well.
 
 It supports Windows, and probably Linux and x86/ARM macOS as well.
 

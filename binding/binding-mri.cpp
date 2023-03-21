@@ -127,6 +127,8 @@ RB_METHOD(mkxpIsReallyMacHost);
 RB_METHOD(mkxpIsReallyLinuxHost);
 RB_METHOD(mkxpIsReallyWindowsHost);
 
+RB_METHOD(mkxpAddExitCallback);
+
 RB_METHOD(mkxpUserLanguage);
 RB_METHOD(mkxpUserName);
 RB_METHOD(mkxpGameTitle);
@@ -242,6 +244,10 @@ static void mriBindingInit() {
     _rb_define_module_function(mod, "is_really_linux?", mkxpIsReallyLinuxHost);
     _rb_define_module_function(mod, "is_really_windows?", mkxpIsReallyWindowsHost);
     
+    
+    VALUE exitCallbacks = rb_ary_new();
+    rb_cv_set(mod, "@@exit_callbacks", exitCallbacks);
+    _rb_define_module_function(mod, "add_exit_callback", mkxpAddExitCallback);
     
     _rb_define_module_function(mod, "user_language", mkxpUserLanguage);
     _rb_define_module_function(mod, "user_name", mkxpUserName);
@@ -457,6 +463,18 @@ RB_METHOD(mkxpIsReallyLinuxHost) {
 RB_METHOD(mkxpIsReallyWindowsHost) {
     RB_UNUSED_PARAM;
     return rb_bool_new(mkxp_sys::getRealHostType() == mkxp_sys::WineHostType::Windows);
+}
+
+
+RB_METHOD(mkxpAddExitCallback) {
+    VALUE proc;
+    rb_scan_args(argc, argv, "1", &proc);
+
+    VALUE sys = rb_const_get(rb_cObject, rb_intern("System"));
+    VALUE exitCallbacks = rb_cv_get(sys, "@@exit_callbacks");
+    rb_ary_push(exitCallbacks, proc);
+
+    return Qtrue;
 }
 
 RB_METHOD(mkxpUserLanguage) {
@@ -1220,6 +1238,16 @@ static void mriBindingExecute() {
     shState->rtData().rqTermAck.set();
 }
 
-static void mriBindingTerminate() { rb_raise(rb_eSystemExit, " "); }
+static void mriBindingTerminate() {
+    VALUE sys = rb_const_get(rb_cObject, rb_intern("System"));
+    VALUE exitCallbacks = rb_cv_get(sys, "@@exit_callbacks");
+    if (exitCallbacks != Qnil) {
+        for (long i = 0l; i < rb_array_len(exitCallbacks); i++) {
+            rb_proc_call(rb_ary_entry(exitCallbacks, i), rb_ary_new());
+        }
+    }
+
+    rb_raise(rb_eSystemExit, " ");
+}
 
 static void mriBindingReset() { rb_raise(getRbData()->exc[Reset], " "); }
