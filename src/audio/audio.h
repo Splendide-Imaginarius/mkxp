@@ -61,6 +61,10 @@ public:
 	void sePlay(const char *filename,
 	            int volume = 100,
 	            int pitch = 100);
+	void sePlayPosition(const char *filename,
+	            int volume = 100,
+	            int pitch = 100,
+				double x = 0.0f, double y = 0.0f, double z = 0.0f);
 	void seStop();
 
 	void setupMidi();

@@ -68,10 +68,11 @@ extern const char module_rpg2[];
 extern const char module_rpg3[];
 
 static void mriBindingExecute();
+static void mriExitProcs();
 static void mriBindingTerminate();
 static void mriBindingReset();
 
-ScriptBinding scriptBindingImpl = {mriBindingExecute, mriBindingTerminate,
+ScriptBinding scriptBindingImpl = {mriBindingExecute, mriExitProcs, mriBindingTerminate,
     mriBindingReset};
 
 ScriptBinding *scriptBinding = &scriptBindingImpl;
@@ -1117,6 +1118,16 @@ static void showExc(VALUE exc, const BacktraceData &btData) {
     showMsg(ms);
 }
 
+static void mriExitProcs() {
+    VALUE sys = rb_const_get(rb_cObject, rb_intern("System"));
+    VALUE exitCallbacks = rb_cv_get(sys, "@@exit_callbacks");
+    if (exitCallbacks != Qnil) {
+        for (long i = 0l; i < rb_array_len(exitCallbacks); i++) {
+            rb_proc_call(rb_ary_entry(exitCallbacks, i), rb_ary_new());
+        }
+    }
+}
+
 static void mriBindingExecute() {
     Config &conf = shState->rtData().config;
     
@@ -1233,20 +1244,14 @@ static void mriBindingExecute() {
     if (!NIL_P(exc) && !rb_obj_is_kind_of(exc, rb_eSystemExit))
         showExc(exc, btData);
     
+    mriExitProcs();
+
     ruby_cleanup(0);
     
     shState->rtData().rqTermAck.set();
 }
 
 static void mriBindingTerminate() {
-    VALUE sys = rb_const_get(rb_cObject, rb_intern("System"));
-    VALUE exitCallbacks = rb_cv_get(sys, "@@exit_callbacks");
-    if (exitCallbacks != Qnil) {
-        for (long i = 0l; i < rb_array_len(exitCallbacks); i++) {
-            rb_proc_call(rb_ary_entry(exitCallbacks, i), rb_ary_new());
-        }
-    }
-
     rb_raise(rb_eSystemExit, " ");
 }
 

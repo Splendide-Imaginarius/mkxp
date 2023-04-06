@@ -30,6 +30,9 @@ struct ScriptBinding
 	 * execution or an error is encountered */
 	void (*execute) (void);
 
+	// call exit procs
+	void (*exitProcs) (void);
+
 	/* Instructs the binding
 	 * to immediately terminate script execution. This
 	 * function will perform a longjmp instead of returning,

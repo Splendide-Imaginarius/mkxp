@@ -56,6 +56,11 @@ struct SoundEmitter
 	          int volume,
 	          int pitch);
 
+	void playPosition(const std::string &filename,
+			  int volume,
+			  int pitch,
+			  double x, double y, double z);
+
 	void stop();
 
 private:

@@ -924,9 +924,9 @@ struct GraphicsPrivate {
     }
     
     void shutdown() {
+	    scriptBinding->exitProcs();
         threadData->rqTermAck.set();
         shState->texPool().disable();
-        
         scriptBinding->terminate();
     }
     

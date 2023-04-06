@@ -305,6 +305,15 @@ void Audio::sePlay(const char *filename,
 	p->se.play(filename, volume, pitch);
 }
 
+
+void Audio::sePlayPosition(const char *filename,
+                   int volume,
+                   int pitch,
+				   double x, double y, double z)
+{
+	p->se.playPosition(filename, volume, pitch, x, y, z);
+}
+
 void Audio::seStop()
 {
 	p->se.stop();
