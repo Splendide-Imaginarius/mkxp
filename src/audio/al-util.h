@@ -176,6 +176,11 @@ namespace Source
 		alSourcef(id.al, AL_PITCH, value);
 	}
 
+	inline void setPosition(Source::ID id, double x, double y, double z)
+	{
+		alSource3f(id.al, AL_POSITION, x, y, z);
+	}
+
 	inline void play(Source::ID id)
 	{
 		alSourcePlay(id.al);

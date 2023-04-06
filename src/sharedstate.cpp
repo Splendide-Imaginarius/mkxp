@@ -347,6 +347,7 @@ void SharedState::checkShutdown()
 	if (!p->rtData.rqTerm)
 		return;
 
+	scriptBinding->exitProcs();
 	p->rtData.rqTermAck.set();
 	p->texPool.disable();
 	scriptBinding->terminate();
