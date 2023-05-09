@@ -1,5 +1,7 @@
-// From https://raw.githubusercontent.com/Sentmoraap/doing-sdl-right/93a52a0db0ff2da5066cce12f5b9a2ac62e6f401/assets/lanczos3.frag
+// From https://raw.githubusercontent.com/Sentmoraap/doing-sdl-right/f1a0183692abbd5d899fb432ab8dafe228a4929a/assets/lanczos3.frag
 // Copyright 2020 Lilian Gimenez (Sentmoraap).
+// mkxp-zr modifications Copyright 2022-2023 Splendide Imaginarius.
+
 // MIT license.
 
 uniform sampler2D texture;

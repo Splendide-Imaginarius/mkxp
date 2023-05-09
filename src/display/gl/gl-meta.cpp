@@ -25,6 +25,7 @@
 #include "glstate.h"
 #include "quad.h"
 #include "config.h"
+#include "etc.h"
 
 namespace GLMeta
 {
@@ -145,21 +146,44 @@ static void _blitBegin(FBO::ID fbo, const Vec2i &size)
 		FBO::bind(fbo);
 		glState.viewport.pushSet(IntRect(0, 0, size.x, size.y));
 
-		if (shState->config().lanczos3Scaling)
+		switch (shState->config().smoothScaling)
 		{
-			Lanczos3Shader &shader = shState->shaders().lanczos3;
-			shader.bind();
-			shader.applyViewportProj();
-			shader.setTranslation(Vec2i());
-			shader.setTexSize(Vec2i(size.x, size.y));
-		}
-		else
-		{
-			SimpleShader &shader = shState->shaders().simple;
-			shader.bind();
-			shader.applyViewportProj();
-			shader.setTranslation(Vec2i());
-			shader.setTexSize(Vec2i(size.x, size.y));
+		case Bicubic:
+      {
+        BicubicShader &shader = shState->shaders().bicubic;
+        shader.bind();
+        shader.applyViewportProj();
+        shader.setTranslation(Vec2i());
+        shader.setTexSize(Vec2i(size.x, size.y));
+      }
+			break;
+		case Lanczos3:
+      {
+        Lanczos3Shader &shader = shState->shaders().lanczos3;
+        shader.bind();
+        shader.applyViewportProj();
+        shader.setTranslation(Vec2i());
+        shader.setTexSize(Vec2i(size.x, size.y));
+      }
+			break;
+		case xBRZ:		
+      {
+        XbrzShader &shader = shState->shaders().xbrz;
+        shader.bind();
+        shader.applyViewportProj();
+        shader.setTranslation(Vec2i());
+        shader.setTexSize(Vec2i(size.x, size.y));
+        shader.setTargetScale(Vec2(1., 1.));
+      }
+			break;
+		default:
+      {
+        SimpleShader &shader = shState->shaders().simple;
+        shader.bind();
+        shader.applyViewportProj();
+        shader.setTranslation(Vec2i());
+        shader.setTexSize(Vec2i(size.x, size.y));
+      }
 		}
 	}
 }
@@ -182,17 +206,37 @@ void blitSource(TEXFBO &source)
 	}
 	else
 	{
-		if (shState->config().lanczos3Scaling)
+		switch (shState->config().smoothScaling)
 		{
-			Lanczos3Shader &shader = shState->shaders().lanczos3;
-			shader.bind();
-			shader.setTexSize(Vec2i(source.width, source.height));
-		}
-		else
-		{
-			SimpleShader &shader = shState->shaders().simple;
-			shader.bind();
-			shader.setTexSize(Vec2i(source.width, source.height));
+		case Bicubic:
+      {
+        BicubicShader &shader = shState->shaders().bicubic;
+        shader.bind();
+        shader.setTexSize(Vec2i(source.width, source.height));
+      }
+
+			break;
+		case Lanczos3:
+      {
+        Lanczos3Shader &shader = shState->shaders().lanczos3;
+        shader.bind();
+        shader.setTexSize(Vec2i(source.width, source.height));
+      }
+			break;
+		case xBRZ:
+      {
+        XbrzShader &shader = shState->shaders().xbrz;
+        shader.bind();
+        shader.setTexSize(Vec2i(source.width, source.height));
+      }
+
+			break;
+		default:
+      {
+        SimpleShader &shader = shState->shaders().simple;
+        shader.bind();
+        shader.setTexSize(Vec2i(source.width, source.height));
+      }
 		}
 		TEX::bind(source.tex);
 	}
@@ -213,6 +257,12 @@ void blitRectangle(const IntRect &src, const IntRect &dst, bool smooth)
 	}
 	else
 	{
+		if (shState->config().smoothScaling == xBRZ)
+		{
+			XbrzShader &shader = shState->shaders().xbrz;
+			shader.setTargetScale(Vec2((float)(shState->config().xbrzScalingFactor), (float)(shState->config().xbrzScalingFactor)));
+		}
+
 		if (smooth)
 			TEX::setSmooth(true);
 
