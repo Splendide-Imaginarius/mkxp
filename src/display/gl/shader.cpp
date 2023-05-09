@@ -779,7 +779,6 @@ void Lanczos3Shader::setTexSize(const Vec2i &value)
 	ShaderBase::setTexSize(value);
 	gl.Uniform2f(u_sourceSize, (float)value.x, (float)value.y);
 }
-
 XbrzShader::XbrzShader()
 {
 	INIT_SHADER(simple, xbrz, XbrzShader);

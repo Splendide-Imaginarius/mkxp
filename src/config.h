@@ -54,7 +54,7 @@ struct Config {
     bool frameSkip;
     bool syncToRefreshrate;
     
-    bool solidFonts;
+    std::vector<std::string> solidFonts;
     
     bool subImageFix;
     bool enableBlitting;
@@ -91,6 +91,10 @@ struct Config {
         int sourceCount;
     } SE;
     
+    struct {
+        int trackCount;
+    } BGM;
+    
     bool useScriptNames;
     
     std::string customScript;
@@ -115,7 +119,7 @@ struct Config {
         std::string title;
     } game;
     
-    // JIT Options
+    // MJIT Options
     struct {
         bool enabled;
         int verboseLevel;
@@ -123,6 +127,11 @@ struct Config {
         int minCalls;
     } jit;
     
+    // YJIT Options
+    struct {
+        bool enabled;
+    } yjit;
+
     // Keybinding action name mappings
     struct {
         std::string a;
@@ -143,6 +152,8 @@ struct Config {
     std::string customDataPath;
     
     Config();
+    
+    bool fontIsSolid(const char *fontName) const;
     
     void read(int argc, char *argv[]);
     void readGameINI();
