@@ -76,21 +76,19 @@ RB_METHOD(viewportInitialize) {
     return self;
 }
 
-void bitmapInitProps(Bitmap *b, VALUE self);
-
-RB_METHOD(viewportSnapToBuffer) {
+RB_METHOD(viewportSpriteFinalize)
+{
     RB_UNUSED_PARAM;
-
-    Viewport* vp = getPrivateData<Viewport>(self);
     
-    Bitmap *result = 0;
+    VALUE objectid;
     
-    GUARD_EXC( result = vp->snapToBitmap(); );
+    rb_get_args(argc, argv, "o", &objectid RB_ARG_END);
     
-    VALUE obj = wrapObject(result, BitmapType);
-    bitmapInitProps(result, obj);
+    if (rgssVer == 1) {
+        disposableForgetChild(self, objectid);
+    }
     
-    return obj;
+    return Qnil;
 }
 
 DEF_GFX_PROP_OBJ_VAL(Viewport, Rect, Rect, "rect")
@@ -113,8 +111,7 @@ void viewportBindingInit() {
     sceneElementBindingInit<Viewport>(klass);
     
     _rb_define_method(klass, "initialize", viewportInitialize);
-    
-    _rb_define_method(klass, "snap_to_bitmap", viewportSnapToBuffer);
+    _rb_define_method(klass, "_sprite_finalizer", viewportSpriteFinalize);
     
     INIT_PROP_BIND(Viewport, Rect, "rect");
     INIT_PROP_BIND(Viewport, OX, "ox");
