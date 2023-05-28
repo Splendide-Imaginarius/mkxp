@@ -20,6 +20,8 @@
 */
 
 #include "shader.h"
+#include "config.h"
+#include "graphics.h"
 #include "sharedstate.h"
 #include "glstate.h"
 #include "exception.h"
@@ -296,8 +298,18 @@ void ShaderBase::init()
 
 void ShaderBase::applyViewportProj()
 {
+	// High-res: scale the matrix if we're rendering to the screen.
+	// We detect the screen destination based on the viewport resolution,
+	// with an explicit disable flag in case of problems.
+	// This is kind of hacky but it seems to work fine in practice.
+	const bool &allow = shState->config().enableHires && glState.allowFramebufferScaling.get();
 	const IntRect &vp = glState.viewport.get();
-	projMat.set(Vec2i(vp.w, vp.h));
+	if (allow && vp.w == shState->graphics().widthHires() && vp.h == shState->graphics().heightHires()) {
+		projMat.set(Vec2i(shState->graphics().width(), shState->graphics().height()));
+	}
+	else {
+		projMat.set(Vec2i(vp.w, vp.h));
+	}
 }
 
 void ShaderBase::setTexSize(const Vec2i &value)

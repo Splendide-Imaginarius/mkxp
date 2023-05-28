@@ -112,6 +112,11 @@ class GLProgram : public GLProperty<unsigned int> /* GLuint */
 	void apply(const unsigned int &value);
 };
 
+class GLAllowFramebufferScaling : public GLProperty<bool>
+{
+	void apply(const bool &value);
+};
+
 
 class GLState
 {
@@ -123,6 +128,7 @@ public:
 	GLBlend blend;
 	GLViewport viewport;
 	GLProgram program;
+	GLAllowFramebufferScaling allowFramebufferScaling;
 
 	struct Caps
 	{

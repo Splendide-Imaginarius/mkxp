@@ -44,6 +44,10 @@ struct Config {
     bool fixedAspectRatio;
     int smoothScaling;
     double xbrzScalingFactor;
+    bool enableHires;
+    double textureScalingFactor;
+    double framebufferScalingFactor;
+    double atlasScalingFactor;
     bool vsync;
     
     int defScreenW;

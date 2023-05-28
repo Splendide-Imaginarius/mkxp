@@ -135,6 +135,10 @@ void Config::read(int argc, char *argv[]) {
         {"fixedAspectRatio", true},
         {"smoothScaling", 0},
         {"xbrzScalingFactor", 1.},
+        {"enableHires", false},
+        {"textureScalingFactor", 1.},
+        {"framebufferScalingFactor", 1.},
+        {"atlasScalingFactor", 1.},
         {"vsync", false},
         {"defScreenW", 0},
         {"defScreenH", 0},
@@ -259,6 +263,10 @@ try { exp } catch (...) {}
     SET_OPT(fixedAspectRatio, boolean);
     SET_OPT(smoothScaling, integer);
     SET_OPT(xbrzScalingFactor, number);
+    SET_OPT(enableHires, boolean);
+    SET_OPT(textureScalingFactor, number);
+    SET_OPT(framebufferScalingFactor, number);
+    SET_OPT(atlasScalingFactor, number);
     SET_OPT(winResizable, boolean);
     SET_OPT(vsync, boolean);
     SET_STRINGOPT(windowTitle, windowTitle);

@@ -203,8 +203,10 @@ struct TEXFBO
 	FBO::ID fbo;
 	int width, height;
 
+	TEXFBO *selfHires;
+
 	TEXFBO()
-	    : tex(0), fbo(0), width(0), height(0)
+	    : tex(0), fbo(0), width(0), height(0), selfHires(nullptr)
 	{}
 
 	bool operator==(const TEXFBO &other) const

@@ -23,7 +23,9 @@
 #include "config.h"
 #include "etc.h"
 #include "gl-fun.h"
+#include "graphics.h"
 #include "shader.h"
+#include "sharedstate.h"
 
 #include <SDL_rect.h>
 
@@ -36,7 +38,24 @@ void GLClearColor::apply(const Vec4 &value) {
 }
 
 void GLScissorBox::apply(const IntRect &value) {
-  gl.Scissor(value.x, value.y, value.w, value.h);
+  // High-res: scale the scissorbox if we're rendering to the screen.
+  // We detect the screen destination based on the viewport resolution,
+  // with an explicit disable flag in case of problems.
+  // This is kind of hacky but it seems to work fine in practice.
+  if (shState) {
+    const bool &allow = shState->config().enableHires && glState.allowFramebufferScaling.get();
+    const IntRect &vp = glState.viewport.get();
+    const double framebufferScalingFactor = shState->config().framebufferScalingFactor;
+    if (allow && vp.w == shState->graphics().widthHires() && vp.h == shState->graphics().heightHires()) {
+      gl.Scissor((int)lround(framebufferScalingFactor * value.x), (int)lround(framebufferScalingFactor * value.y), (int)lround(framebufferScalingFactor * value.w), (int)lround(framebufferScalingFactor * value.h));
+    }
+    else {
+      gl.Scissor(value.x, value.y, value.w, value.h);
+    }
+  }
+  else {
+    gl.Scissor(value.x, value.y, value.w, value.h);
+  }
 }
 
 void GLScissorBox::setIntersect(const IntRect &value) {
@@ -85,9 +104,18 @@ void GLBlend::apply(const bool &value) { applyBool(GL_BLEND, value); }
 
 void GLViewport::apply(const IntRect &value) {
   gl.Viewport(value.x, value.y, value.w, value.h);
+
+  // High-res workaround: the scissorbox is dependent on the viewport.
+  glState.scissorBox.refresh();
 }
 
 void GLProgram::apply(const unsigned int &value) { gl.UseProgram(value); }
+
+void GLAllowFramebufferScaling::apply(const bool &value) {
+  // Theoretically we should call glState.scissorBox.refresh(), but in practice
+  // this flag will be enabled/disabled well before we touch the viewport/scissorbox,
+  // so we don't need to.
+}
 
 GLState::Caps::Caps() { gl.GetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize); }
 
@@ -100,6 +128,7 @@ GLState::GLState(const Config &conf) {
   scissorTest.init(false);
   scissorBox.init(IntRect(0, 0, conf.defScreenW, conf.defScreenH));
   program.init(0);
+  allowFramebufferScaling.init(true);
 
   if (conf.maxTextureSize > 0)
     caps.maxTexSize = conf.maxTextureSize;
